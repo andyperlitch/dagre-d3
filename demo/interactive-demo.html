@@ -173,7 +173,7 @@ function tryDraw() {
       d3.select("svg").call(d3.behavior.zoom().on("zoom", function() {
         var ev = d3.event;
         if (!ev.sourceEvent.altKey) {
-          ev.sourceEvent.preventDefault();
+          // ev.sourceEvent.preventDefault();
           ev.sourceEvent.stopPropagation();
           return;
         }
