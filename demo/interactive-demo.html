@@ -170,16 +170,28 @@ function tryDraw() {
       renderer.run(result, svg.append("g"));
 
       // Add zoom behavior
-      d3.select("svg").call(d3.behavior.zoom().on("zoom", function() {
+      var zoom = d3.behavior.zoom();
+      var lastRegistered = {
+        translate: zoom.translate(),
+        scale: zoom.scale()
+      };
+
+      zoom.on("zoom", function() {
         var ev = d3.event;
-        if (!ev.sourceEvent.altKey) {
-          // ev.sourceEvent.preventDefault();
-          ev.sourceEvent.stopPropagation();
-          return;
+        if (!ev.sourceEvent.altKey && ev.sourceEvent.type === "wheel") {
+          var sev = ev.sourceEvent;
+          window.scrollBy(0, sev.deltaY);
+          zoom.translate(lastRegistered.translate);
+          zoom.scale(lastRegistered.scale);
+        } else {
+          lastRegistered.translate = ev.translate;
+          lastRegistered.scale = ev.scale;
+          svg.select("g")
+            .attr("transform", "translate(" + ev.translate + ") scale(" + ev.scale + ")");
         }
-        svg.select("g")
-          .attr("transform", "translate(" + ev.translate + ") scale(" + ev.scale + ")");
-      }));
+      });
+
+      d3.select("svg").call(zoom);
     }
   }
 }
